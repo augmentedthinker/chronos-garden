@@ -34,6 +34,8 @@ func _send_request(endpoint: String, method: HTTPClient.Method, body: String = "
 		}
 
 	var http = HTTPRequest.new()
+	if OS.has_feature("web"):
+		http.accept_gzip = false
 	add_child(http)
 
 	var req_headers = _get_headers()

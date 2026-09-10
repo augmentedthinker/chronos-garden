@@ -21,6 +21,9 @@ func _ready() -> void:
 	world = main_scene.instantiate()
 	add_child(world)
 	await world.world_initialized
+	# Isolate test from live cloud database
+	world.persistence.is_cloud_active = false
+	world.persistence.supabase.supabase_url = ""
 
 	# Test 1: Verify Initial Clean Reset
 	print("\n[TEST 1] Resetting garden to clean state...")
@@ -43,10 +46,12 @@ func _ready() -> void:
 
 	# Test 3: Offline Elapsed-Time Reconstruction (30 minutes = 3 plants)
 	print("\n[TEST 3] Testing Offline Elapsed-Time Reconstruction (30 minutes elapsed)...")
-	# We simulate the user closing the app and reopening 30 minutes (1800s) later
+	# We simulate the user having been away for 30 minutes
 	var sim_elapsed = 1800 # 30 mins = 3 intervals of 600s
+	world.last_planted_unix -= sim_elapsed
 	var now = int(Time.get_unix_time_from_system())
-	world._reconstruct_offline_time(sim_elapsed, now)
+	var elapsed = now - world.last_planted_unix
+	world._reconstruct_offline_time(elapsed, now)
 	world._render_existing_plants()
 
 	assert(world.current_plant_count == 4, "Total plants should now be 4 (1 live + 3 reconstructed)")

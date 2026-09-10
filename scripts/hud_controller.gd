@@ -54,7 +54,7 @@ func update_countdown(seconds_remaining: float, is_full: bool = false) -> void:
 func update_plant_count(current: int, maximum: int) -> void:
 	if plant_count_label:
 		if current >= maximum:
-			plant_count_label.text = "Plants: %d / %d (Full Bloom ✨)" % [current, maximum]
+			plant_count_label.text = "Plants: %d / %d (Full Bloom)" % [current, maximum]
 			plant_count_label.modulate = Color(1.0, 0.85, 0.4)
 		else:
 			plant_count_label.text = "Plants: %d / %d" % [current, maximum]

@@ -85,6 +85,9 @@ func _initialize_world() -> void:
 	last_planted_unix = _parse_iso_to_unix(last_iso)
 	var now_unix = int(Time.get_unix_time_from_system())
 
+	# Render visual plants already in state
+	_render_existing_plants()
+
 	# If newly initialized garden or invalid timestamp
 	if last_planted_unix <= 0:
 		last_planted_unix = now_unix
@@ -96,9 +99,6 @@ func _initialize_world() -> void:
 			_reconstruct_offline_time(elapsed, now_unix)
 		else:
 			time_until_next_plant = max(1.0, planting_interval - float(elapsed))
-
-	# Render visual plants
-	_render_existing_plants()
 
 	# Render HUD
 	if hud:
@@ -129,8 +129,18 @@ func _process(delta: float) -> void:
 
 ## Helper to format any UTC unix timestamp into the user's local 12-hour time (e.g. "8:25 AM")
 func _format_local_time(unix_sec: int) -> String:
-	var tz = Time.get_time_zone_from_system()
-	var bias_minutes = tz.get("bias", 0)
+	var bias_minutes = 0
+	if OS.has_feature("web"):
+		var js_offset = JavaScriptBridge.eval("new Date().getTimezoneOffset()")
+		if js_offset != null:
+			bias_minutes = -int(js_offset)
+		else:
+			var tz = Time.get_time_zone_from_system()
+			bias_minutes = tz.get("bias", 0)
+	else:
+		var tz = Time.get_time_zone_from_system()
+		bias_minutes = tz.get("bias", 0)
+
 	var local_unix = unix_sec + (bias_minutes * 60)
 	var dt = Time.get_datetime_dict_from_unix_time(local_unix)
 	var hour = dt.get("hour", 0)
@@ -160,7 +170,7 @@ func _reconstruct_offline_time(elapsed_seconds: int, _now_unix: int) -> void:
 				"plot_index": -1,
 				"event_time": Time.get_datetime_string_from_unix_time(_now_unix, true) + "Z",
 				"event_time_str": _format_local_time(_now_unix),
-				"message": "🌸 Garden in Full Bloom (%d plots). Simulation resting." % max_plots,
+				"message": "[Full Bloom] Garden reached full capacity (%d plots). Simulation resting." % max_plots,
 				"is_offline": true
 			}
 			persistence.record_event(bloom_ev)
@@ -274,7 +284,7 @@ func _on_character_planting_finished(plot_idx: int) -> void:
 			"plot_index": plot_idx,
 			"event_time": iso,
 			"event_time_str": time_str,
-			"message": "🌸 Garden in Full Bloom! All %d plots thriving." % max_plots,
+			"message": "[Full Bloom] All %d plots thriving." % max_plots,
 			"is_offline": false
 		}
 		persistence.record_event(bloom_ev)
@@ -299,17 +309,19 @@ func _spawn_plant_at_plot(plot_idx: int, p_num: int, is_off: bool, iso: String, 
 
 func _render_existing_plants() -> void:
 	for p_data in active_plants_data:
-		var p_idx = p_data.get("plot_index", 0)
-		var p_num = p_data.get("plant_number", 1)
-		var is_off = p_data.get("is_offline", false)
-		var iso = p_data.get("planted_at", "")
-		var t_str = p_data.get("time_str", "--:--")
+		var p_idx = int(p_data.get("plot_index", 0))
+		var p_num = int(p_data.get("plant_number", 1))
+		var is_off = bool(p_data.get("is_offline", false))
+		var iso = str(p_data.get("planted_at", ""))
+		var t_str = str(p_data.get("time_str", "--:--"))
 		_spawn_plant_at_plot(p_idx, p_num, is_off, iso, t_str)
 
 func _find_first_empty_plot_index() -> int:
 	var occupied_indices = {}
 	for p in active_plants_data:
-		occupied_indices[p.get("plot_index", -1)] = true
+		var raw_idx = p.get("plot_index", -1)
+		if raw_idx != null:
+			occupied_indices[int(raw_idx)] = true
 
 	for i in range(plots.size()):
 		if not occupied_indices.has(i) and not plots[i].is_occupied():
@@ -365,7 +377,7 @@ func _reset_garden() -> void:
 			"plot_index": -1,
 			"event_time": Time.get_datetime_string_from_unix_time(now_unix, true) + "Z",
 			"event_time_str": _format_local_time(now_unix),
-			"message": "🌾 Harvested %d mature plants! Soil cleared for new cycle." % harvest_count,
+			"message": "[Harvest] Harvested %d mature plants! Soil cleared for new cycle." % harvest_count,
 			"is_offline": false
 		}
 		persistence.record_event(harvest_ev)

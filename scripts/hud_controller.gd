@@ -21,6 +21,9 @@ signal credentials_submitted(url: String, anon_key: String)
 @onready var key_input: LineEdit = %KeyInput
 @onready var config_status_label: Label = %ConfigStatusLabel
 
+@onready var btn_reset: Button = get_node_or_null("BottomBar/Margin/HBox/BtnReset")
+@onready var btn_plant_now: Button = get_node_or_null("BottomBar/Margin/HBox/BtnPlantNow")
+
 var current_events: Array = []
 
 func _ready() -> void:
@@ -36,16 +39,30 @@ func _update_clock() -> void:
 		var dt = Time.get_datetime_dict_from_system()
 		system_clock_label.text = "%02d:%02d:%02d" % [dt.hour, dt.minute, dt.second]
 
-func update_countdown(seconds_remaining: float) -> void:
+func update_countdown(seconds_remaining: float, is_full: bool = false) -> void:
 	if next_plant_timer_label:
-		var s = max(0, int(seconds_remaining))
-		var mins = s / 60
-		var secs = s % 60
-		next_plant_timer_label.text = "%02d:%02d" % [mins, secs]
+		if is_full:
+			next_plant_timer_label.text = "Garden Full (12/12)"
+			next_plant_timer_label.modulate = Color(0.9, 0.7, 1.0)
+		else:
+			var s = max(0, int(seconds_remaining))
+			var mins = s / 60
+			var secs = s % 60
+			next_plant_timer_label.text = "%02d:%02d" % [mins, secs]
+			next_plant_timer_label.modulate = Color(1.0, 1.0, 1.0)
 
 func update_plant_count(current: int, maximum: int) -> void:
 	if plant_count_label:
-		plant_count_label.text = "Plants: %d / %d" % [current, maximum]
+		if current >= maximum:
+			plant_count_label.text = "Plants: %d / %d (Full Bloom ✨)" % [current, maximum]
+			plant_count_label.modulate = Color(1.0, 0.85, 0.4)
+		else:
+			plant_count_label.text = "Plants: %d / %d" % [current, maximum]
+			plant_count_label.modulate = Color(1.0, 1.0, 1.0)
+	if btn_reset:
+		btn_reset.text = "Harvest Garden (Reset)" if current >= maximum else "Reset Garden"
+	if btn_plant_now:
+		btn_plant_now.disabled = (current >= maximum)
 
 func update_backend_status(is_cloud: bool, provider: String, details: String) -> void:
 	if backend_status_badge:

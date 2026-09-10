@@ -1,6 +1,8 @@
 class_name WorldManager
 extends Node2D
 
+signal world_initialized()
+
 ## Primary simulation coordinator: orchestrates garden plots, character behavior,
 ## offline elapsed-time reconstruction, and persistent cloud/local syncing.
 
@@ -63,6 +65,21 @@ func _initialize_world() -> void:
 	active_plants_data = state.get("active_plots", [])
 	current_plant_count = state.get("total_plants", active_plants_data.size())
 
+	# Format historical timestamps to user's local timezone
+	for ev in events:
+		var ev_iso = ev.get("event_time", "")
+		if not ev_iso.is_empty():
+			var u = _parse_iso_to_unix(ev_iso)
+			if u > 0:
+				ev["event_time_str"] = _format_local_time(u)
+
+	for p in active_plants_data:
+		var p_iso = p.get("planted_at", "")
+		if not p_iso.is_empty():
+			var u = _parse_iso_to_unix(p_iso)
+			if u > 0:
+				p["time_str"] = _format_local_time(u)
+
 	# Parse last planting timestamp
 	var last_iso = state.get("last_planted_at", "")
 	last_planted_unix = _parse_iso_to_unix(last_iso)
@@ -87,19 +104,44 @@ func _initialize_world() -> void:
 	if hud:
 		hud.set_events(events)
 		hud.update_plant_count(current_plant_count, max_plots)
-		hud.update_countdown(time_until_next_plant)
+		var is_full = current_plant_count >= max_plots
+		hud.update_countdown(time_until_next_plant, is_full)
+
+	world_initialized.emit()
 
 func _process(delta: float) -> void:
 	if is_character_busy:
 		return
 
+	var is_full = current_plant_count >= max_plots
+	if is_full:
+		if hud:
+			hud.update_countdown(0.0, true)
+		return
+
 	time_until_next_plant -= delta
 	if hud:
-		hud.update_countdown(time_until_next_plant)
+		hud.update_countdown(time_until_next_plant, false)
 
 	if time_until_next_plant <= 0.0:
 		time_until_next_plant = planting_interval
 		_trigger_scheduled_planting()
+
+## Helper to format any UTC unix timestamp into the user's local 12-hour time (e.g. "8:25 AM")
+func _format_local_time(unix_sec: int) -> String:
+	var tz = Time.get_time_zone_from_system()
+	var bias_minutes = tz.get("bias", 0)
+	var local_unix = unix_sec + (bias_minutes * 60)
+	var dt = Time.get_datetime_dict_from_unix_time(local_unix)
+	var hour = dt.get("hour", 0)
+	var minute = dt.get("minute", 0)
+	var ampm = "AM"
+	if hour >= 12:
+		ampm = "PM"
+	var hour12 = hour % 12
+	if hour12 == 0:
+		hour12 = 12
+	return "%d:%02d %s" % [hour12, minute, ampm]
 
 ## Offline Time Simulation & Reconstruction Logic
 func _reconstruct_offline_time(elapsed_seconds: int, _now_unix: int) -> void:
@@ -112,11 +154,22 @@ func _reconstruct_offline_time(elapsed_seconds: int, _now_unix: int) -> void:
 		var next_slot = _find_first_empty_plot_index()
 		if next_slot == -1:
 			print("Garden reached maximum capacity (%d plots). Halting offline reconstruction." % max_plots)
+			var bloom_ev = {
+				"world_id": "main_garden",
+				"plant_number": current_plant_count,
+				"plot_index": -1,
+				"event_time": Time.get_datetime_string_from_unix_time(_now_unix, true) + "Z",
+				"event_time_str": _format_local_time(_now_unix),
+				"message": "🌸 Garden in Full Bloom (%d plots). Simulation resting." % max_plots,
+				"is_offline": true
+			}
+			persistence.record_event(bloom_ev)
+			if hud:
+				hud.add_event(bloom_ev)
 			break
 
 		var sim_unix = last_planted_unix + (i * interval_int)
-		var sim_dt = Time.get_datetime_dict_from_unix_time(sim_unix)
-		var sim_time_str = "%02d:%02d" % [sim_dt.hour, sim_dt.minute]
+		var sim_time_str = _format_local_time(sim_unix)
 		var sim_iso = Time.get_datetime_string_from_unix_time(sim_unix, true) + "Z"
 
 		current_plant_count += 1
@@ -158,6 +211,7 @@ func _reconstruct_offline_time(elapsed_seconds: int, _now_unix: int) -> void:
 
 	if hud:
 		hud.update_plant_count(current_plant_count, max_plots)
+		hud.update_countdown(time_until_next_plant, current_plant_count >= max_plots)
 	# Persist state
 	_save_world_state()
 
@@ -180,8 +234,7 @@ func _on_character_planting_finished(plot_idx: int) -> void:
 	current_plant_count += 1
 
 	var now_unix = int(Time.get_unix_time_from_system())
-	var dt = Time.get_datetime_dict_from_unix_time(now_unix)
-	var time_str = "%02d:%02d" % [dt.hour, dt.minute]
+	var time_str = _format_local_time(now_unix)
 	var iso = Time.get_datetime_string_from_unix_time(now_unix, true) + "Z"
 
 	last_planted_unix = now_unix
@@ -213,7 +266,24 @@ func _on_character_planting_finished(plot_idx: int) -> void:
 	persistence.record_event(ev_data)
 	if hud:
 		hud.add_event(ev_data)
+
+	if current_plant_count >= max_plots:
+		var bloom_ev = {
+			"world_id": "main_garden",
+			"plant_number": current_plant_count,
+			"plot_index": plot_idx,
+			"event_time": iso,
+			"event_time_str": time_str,
+			"message": "🌸 Garden in Full Bloom! All %d plots thriving." % max_plots,
+			"is_offline": false
+		}
+		persistence.record_event(bloom_ev)
+		if hud:
+			hud.add_event(bloom_ev)
+
+	if hud:
 		hud.update_plant_count(current_plant_count, max_plots)
+		hud.update_countdown(time_until_next_plant, current_plant_count >= max_plots)
 
 	_save_world_state()
 
@@ -276,6 +346,7 @@ func _simulate_offline_time(minutes: int) -> void:
 
 func _reset_garden() -> void:
 	print("Resetting garden...")
+	var harvest_count = current_plant_count
 	for plot in plots:
 		plot.remove_plant()
 	active_plants_data.clear()
@@ -284,10 +355,26 @@ func _reset_garden() -> void:
 	time_until_next_plant = planting_interval
 
 	var _fresh_state = await persistence.reset_world("main_garden", int(planting_interval), max_plots)
+	
+	var initial_events: Array = []
+	if harvest_count > 0:
+		var now_unix = int(Time.get_unix_time_from_system())
+		var harvest_ev = {
+			"world_id": "main_garden",
+			"plant_number": harvest_count,
+			"plot_index": -1,
+			"event_time": Time.get_datetime_string_from_unix_time(now_unix, true) + "Z",
+			"event_time_str": _format_local_time(now_unix),
+			"message": "🌾 Harvested %d mature plants! Soil cleared for new cycle." % harvest_count,
+			"is_offline": false
+		}
+		persistence.record_event(harvest_ev)
+		initial_events.append(harvest_ev)
+
 	if hud:
-		hud.set_events([])
+		hud.set_events(initial_events)
 		hud.update_plant_count(0, max_plots)
-		hud.update_countdown(time_until_next_plant)
+		hud.update_countdown(time_until_next_plant, false)
 
 func _on_credentials_submitted(url: String, key: String) -> void:
 	if hud:

@@ -20,18 +20,16 @@ func _ready() -> void:
 
 	world = main_scene.instantiate()
 	add_child(world)
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await world.world_initialized
 
 	# Test 1: Verify Initial Clean Reset
 	print("\n[TEST 1] Resetting garden to clean state...")
-	world._reset_garden()
+	await world._reset_garden()
 	await get_tree().create_timer(0.2).timeout
 	assert(world.current_plant_count == 0, "Plant count should be 0 after reset")
 	assert(world.plots.size() == 12, "Should have 12 predefined plots")
 	print("  ✓ Clean state verified: 0 plants, 12 plots available.")
 
-	# Test 2: Live Planting Execution
 	print("\n[TEST 2] Testing Live Planting Trigger...")
 	var initial_time = int(Time.get_unix_time_from_system())
 	world._trigger_scheduled_planting()

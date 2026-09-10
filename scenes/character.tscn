@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3 uid="uid://ccharacter001"]
+
+[ext_resource type="Script" path="res://scripts/character_controller.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://ccharidle001" path="res://assets/char_idle.png" id="2_char_idle"]
+
+[node name="Character" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+scale = Vector2(1.8, 1.8)
+texture = ExtResource("2_char_idle")
+
+[node name="ActionLabel" type="Label" parent="."]
+texture_filter = 1
+offset_left = -60.0
+offset_top = -42.0
+offset_right = 60.0
+offset_bottom = -26.0
+theme_override_colors/font_color = Color(1, 1, 1, 0.95)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 11
+text = "Tending Garden"
+horizontal_alignment = 1

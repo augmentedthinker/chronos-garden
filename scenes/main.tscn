@@ -1,0 +1,504 @@
+[gd_scene load_steps=8 format=3 uid="uid://cmainscene001"]
+
+[ext_resource type="Script" path="res://scripts/world_manager.gd" id="1_world"]
+[ext_resource type="PackedScene" uid="uid://ccharacter001" path="res://scenes/character.tscn" id="2_char"]
+[ext_resource type="PackedScene" uid="uid://cplantplot001" path="res://scenes/plant_plot.tscn" id="3_plot"]
+[ext_resource type="Script" path="res://scripts/persistence_manager.gd" id="4_persist"]
+[ext_resource type="Script" path="res://scripts/supabase_client.gd" id="5_supa"]
+[ext_resource type="Script" path="res://scripts/hud_controller.gd" id="6_hud"]
+[ext_resource type="Texture2D" uid="uid://cfencetile01" path="res://assets/fence_tile.png" id="7_fence"]
+[ext_resource type="Texture2D" uid="uid://cpathtile01" path="res://assets/path_tile.png" id="8_path"]
+
+[node name="MainWorld" type="Node2D"]
+script = ExtResource("1_world")
+
+[node name="BackgroundMeadow" type="ColorRect" parent="."]
+offset_right = 750.0
+offset_bottom = 720.0
+color = Color(0.12, 0.28, 0.16, 1)
+
+[node name="StonePathway" type="Node2D" parent="."]
+
+[node name="P01" type="Sprite2D" parent="StonePathway"]
+texture_filter = 1
+position = Vector2(120, 100)
+scale = Vector2(2, 2)
+texture = ExtResource("8_path")
+
+[node name="P02" type="Sprite2D" parent="StonePathway"]
+texture_filter = 1
+position = Vector2(120, 164)
+scale = Vector2(2, 2)
+texture = ExtResource("8_path")
+
+[node name="P03" type="Sprite2D" parent="StonePathway"]
+texture_filter = 1
+position = Vector2(120, 228)
+scale = Vector2(2, 2)
+texture = ExtResource("8_path")
+
+[node name="P04" type="Sprite2D" parent="StonePathway"]
+texture_filter = 1
+position = Vector2(120, 292)
+scale = Vector2(2, 2)
+texture = ExtResource("8_path")
+
+[node name="P05" type="Sprite2D" parent="StonePathway"]
+texture_filter = 1
+position = Vector2(120, 356)
+scale = Vector2(2, 2)
+texture = ExtResource("8_path")
+
+[node name="P06" type="Sprite2D" parent="StonePathway"]
+texture_filter = 1
+position = Vector2(120, 420)
+scale = Vector2(2, 2)
+texture = ExtResource("8_path")
+
+[node name="P07" type="Sprite2D" parent="StonePathway"]
+texture_filter = 1
+position = Vector2(120, 484)
+scale = Vector2(2, 2)
+texture = ExtResource("8_path")
+
+[node name="P08" type="Sprite2D" parent="StonePathway"]
+texture_filter = 1
+position = Vector2(120, 548)
+scale = Vector2(2, 2)
+texture = ExtResource("8_path")
+
+[node name="P09" type="Sprite2D" parent="StonePathway"]
+texture_filter = 1
+position = Vector2(120, 612)
+scale = Vector2(2, 2)
+texture = ExtResource("8_path")
+
+[node name="GardenPerimeterFence" type="Node2D" parent="."]
+
+[node name="F01" type="Sprite2D" parent="GardenPerimeterFence"]
+texture_filter = 1
+position = Vector2(40, 70)
+scale = Vector2(2, 2)
+texture = ExtResource("7_fence")
+
+[node name="F02" type="Sprite2D" parent="GardenPerimeterFence"]
+texture_filter = 1
+position = Vector2(104, 70)
+scale = Vector2(2, 2)
+texture = ExtResource("7_fence")
+
+[node name="F03" type="Sprite2D" parent="GardenPerimeterFence"]
+texture_filter = 1
+position = Vector2(168, 70)
+scale = Vector2(2, 2)
+texture = ExtResource("7_fence")
+
+[node name="F04" type="Sprite2D" parent="GardenPerimeterFence"]
+texture_filter = 1
+position = Vector2(232, 70)
+scale = Vector2(2, 2)
+texture = ExtResource("7_fence")
+
+[node name="F05" type="Sprite2D" parent="GardenPerimeterFence"]
+texture_filter = 1
+position = Vector2(296, 70)
+scale = Vector2(2, 2)
+texture = ExtResource("7_fence")
+
+[node name="F06" type="Sprite2D" parent="GardenPerimeterFence"]
+texture_filter = 1
+position = Vector2(360, 70)
+scale = Vector2(2, 2)
+texture = ExtResource("7_fence")
+
+[node name="F07" type="Sprite2D" parent="GardenPerimeterFence"]
+texture_filter = 1
+position = Vector2(424, 70)
+scale = Vector2(2, 2)
+texture = ExtResource("7_fence")
+
+[node name="F08" type="Sprite2D" parent="GardenPerimeterFence"]
+texture_filter = 1
+position = Vector2(488, 70)
+scale = Vector2(2, 2)
+texture = ExtResource("7_fence")
+
+[node name="F09" type="Sprite2D" parent="GardenPerimeterFence"]
+texture_filter = 1
+position = Vector2(552, 70)
+scale = Vector2(2, 2)
+texture = ExtResource("7_fence")
+
+[node name="F10" type="Sprite2D" parent="GardenPerimeterFence"]
+texture_filter = 1
+position = Vector2(616, 70)
+scale = Vector2(2, 2)
+texture = ExtResource("7_fence")
+
+[node name="F11" type="Sprite2D" parent="GardenPerimeterFence"]
+texture_filter = 1
+position = Vector2(680, 70)
+scale = Vector2(2, 2)
+texture = ExtResource("7_fence")
+
+[node name="PlotsContainer" type="Node2D" parent="."]
+
+[node name="Plot0" parent="PlotsContainer" instance=ExtResource("3_plot")]
+position = Vector2(240, 180)
+
+[node name="Plot1" parent="PlotsContainer" instance=ExtResource("3_plot")]
+position = Vector2(370, 180)
+plot_index = 1
+
+[node name="Plot2" parent="PlotsContainer" instance=ExtResource("3_plot")]
+position = Vector2(500, 180)
+plot_index = 2
+
+[node name="Plot3" parent="PlotsContainer" instance=ExtResource("3_plot")]
+position = Vector2(630, 180)
+plot_index = 3
+
+[node name="Plot4" parent="PlotsContainer" instance=ExtResource("3_plot")]
+position = Vector2(240, 330)
+plot_index = 4
+
+[node name="Plot5" parent="PlotsContainer" instance=ExtResource("3_plot")]
+position = Vector2(370, 330)
+plot_index = 5
+
+[node name="Plot6" parent="PlotsContainer" instance=ExtResource("3_plot")]
+position = Vector2(500, 330)
+plot_index = 6
+
+[node name="Plot7" parent="PlotsContainer" instance=ExtResource("3_plot")]
+position = Vector2(630, 330)
+plot_index = 7
+
+[node name="Plot8" parent="PlotsContainer" instance=ExtResource("3_plot")]
+position = Vector2(240, 480)
+plot_index = 8
+
+[node name="Plot9" parent="PlotsContainer" instance=ExtResource("3_plot")]
+position = Vector2(370, 480)
+plot_index = 9
+
+[node name="Plot10" parent="PlotsContainer" instance=ExtResource("3_plot")]
+position = Vector2(500, 480)
+plot_index = 10
+
+[node name="Plot11" parent="PlotsContainer" instance=ExtResource("3_plot")]
+position = Vector2(630, 480)
+plot_index = 11
+
+[node name="Character" parent="." instance=ExtResource("2_char")]
+position = Vector2(120, 330)
+
+[node name="PersistenceManager" type="Node" parent="."]
+script = ExtResource("4_persist")
+
+[node name="SupabaseClient" type="Node" parent="PersistenceManager"]
+script = ExtResource("5_supa")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("6_hud")
+
+[node name="TopBar" type="Panel" parent="HUD"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 54.0
+grow_horizontal = 2
+
+[node name="Margin" type="MarginContainer" parent="HUD/TopBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 8
+
+[node name="HBox" type="HBoxContainer" parent="HUD/TopBar/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="TitleLabel" type="Label" parent="HUD/TopBar/Margin/HBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Chronos Garden"
+
+[node name="SubTitle" type="Label" parent="HUD/TopBar/Margin/HBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "|  Persistent 2D World PoC"
+
+[node name="Spacer" type="Control" parent="HUD/TopBar/Margin/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ClockBox" type="HBoxContainer" parent="HUD/TopBar/Margin/HBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ClockIcon" type="Label" parent="HUD/TopBar/Margin/HBox/ClockBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Time:"
+
+[node name="SystemClockLabel" type="Label" parent="HUD/TopBar/Margin/HBox/ClockBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "07:25:00"
+
+[node name="TimerBox" type="HBoxContainer" parent="HUD/TopBar/Margin/HBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="TimerIcon" type="Label" parent="HUD/TopBar/Margin/HBox/TimerBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Next Plant In:"
+
+[node name="NextPlantTimerLabel" type="Label" parent="HUD/TopBar/Margin/HBox/TimerBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.9, 0.5, 1)
+theme_override_font_sizes/font_size = 14
+text = "10:00"
+
+[node name="PlantCountLabel" type="Label" parent="HUD/TopBar/Margin/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.85, 0.4, 1)
+theme_override_font_sizes/font_size = 13
+text = "Plants: 0 / 12"
+
+[node name="BackendStatusBadge" type="Label" parent="HUD/TopBar/Margin/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_font_sizes/font_size = 12
+text = "[Local Sandbox]"
+
+[node name="RightSideEventPanel" type="Panel" parent="HUD"]
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -530.0
+offset_top = 54.0
+offset_bottom = -70.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="HUD/RightSideEventPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 14
+
+[node name="VBox" type="VBoxContainer" parent="HUD/RightSideEventPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="EventLogHeader" type="Label" parent="HUD/RightSideEventPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "Event Log"
+
+[node name="BackendDetailsLabel" type="Label" parent="HUD/RightSideEventPanel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.75, 0.85, 1)
+theme_override_font_sizes/font_size = 11
+text = "Reconstructs offline elapsed-time planting events."
+autowrap_mode = 3
+
+[node name="LegendBox" type="HBoxContainer" parent="HUD/RightSideEventPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="LiveLegend" type="Label" parent="HUD/RightSideEventPanel/Margin/VBox/LegendBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.9, 0.5, 1)
+theme_override_font_sizes/font_size = 11
+text = "* Live In-Session"
+
+[node name="OfflineLegend" type="Label" parent="HUD/RightSideEventPanel/Margin/VBox/LegendBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.78, 0.15, 1)
+theme_override_font_sizes/font_size = 11
+text = "* Reconstructed [offline]"
+
+[node name="HSeparator" type="HSeparator" parent="HUD/RightSideEventPanel/Margin/VBox"]
+layout_mode = 2
+
+[node name="EventLogScroll" type="ScrollContainer" parent="HUD/RightSideEventPanel/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="EventLogText" type="RichTextLabel" parent="HUD/RightSideEventPanel/Margin/VBox/EventLogScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+bbcode_enabled = true
+text = "[color=#94a3b8][i]Loading garden event history...[/i][/color]"
+scroll_following = true
+
+[node name="BottomBar" type="Panel" parent="HUD"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -70.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Margin" type="MarginContainer" parent="HUD/BottomBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 10
+
+[node name="HBox" type="HBoxContainer" parent="HUD/BottomBar/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SimLabel" type="Label" parent="HUD/BottomBar/Margin/HBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
+theme_override_font_sizes/font_size = 12
+text = "Simulation Controls:"
+
+[node name="BtnPlantNow" type="Button" parent="HUD/BottomBar/Margin/HBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Plant Now"
+
+[node name="BtnFF10" type="Button" parent="HUD/BottomBar/Margin/HBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "+10m Offline"
+
+[node name="BtnFF30" type="Button" parent="HUD/BottomBar/Margin/HBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "+30m Offline"
+
+[node name="BtnReset" type="Button" parent="HUD/BottomBar/Margin/HBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Reset Garden"
+
+[node name="Spacer" type="Control" parent="HUD/BottomBar/Margin/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BtnConfig" type="Button" parent="HUD/BottomBar/Margin/HBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Supabase Setup"
+
+[node name="ConfigModal" type="PanelContainer" parent="HUD"]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -180.0
+offset_right = 260.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="HUD/ConfigModal"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 20
+
+[node name="VBox" type="VBoxContainer" parent="HUD/ConfigModal/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="HUD/ConfigModal/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Supabase Cloud Settings"
+
+[node name="Desc" type="Label" parent="HUD/ConfigModal/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 1)
+theme_override_font_sizes/font_size = 11
+text = "Connect your Supabase project to persist garden state across browsers and devices."
+autowrap_mode = 3
+
+[node name="UrlLabel" type="Label" parent="HUD/ConfigModal/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Project URL (e.g. https://xyz.supabase.co):"
+
+[node name="UrlInput" type="LineEdit" parent="HUD/ConfigModal/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "https://your-project.supabase.co"
+
+[node name="KeyLabel" type="Label" parent="HUD/ConfigModal/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Anon / Publishable API Key:"
+
+[node name="KeyInput" type="LineEdit" parent="HUD/ConfigModal/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "sb_publishable_... or eyJhbGciOi..."
+secret = true
+
+[node name="ConfigStatusLabel" type="Label" parent="HUD/ConfigModal/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Status: Ready"
+
+[node name="BtnBox" type="HBoxContainer" parent="HUD/ConfigModal/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 2
+
+[node name="BtnCloseConfig" type="Button" parent="HUD/ConfigModal/Margin/VBox/BtnBox"]
+layout_mode = 2
+text = "Cancel"
+
+[node name="BtnSaveConfig" type="Button" parent="HUD/ConfigModal/Margin/VBox/BtnBox"]
+layout_mode = 2
+text = "Save & Connect"
+
+[connection signal="pressed" from="HUD/BottomBar/Margin/HBox/BtnPlantNow" to="HUD" method="_on_plant_now_pressed"]
+[connection signal="pressed" from="HUD/BottomBar/Margin/HBox/BtnFF10" to="HUD" method="_on_ff_10m_pressed"]
+[connection signal="pressed" from="HUD/BottomBar/Margin/HBox/BtnFF30" to="HUD" method="_on_ff_30m_pressed"]
+[connection signal="pressed" from="HUD/BottomBar/Margin/HBox/BtnReset" to="HUD" method="_on_reset_garden_pressed"]
+[connection signal="pressed" from="HUD/BottomBar/Margin/HBox/BtnConfig" to="HUD" method="_on_open_config_pressed"]
+[connection signal="pressed" from="HUD/ConfigModal/Margin/VBox/BtnBox/BtnCloseConfig" to="HUD" method="_on_close_config_pressed"]
+[connection signal="pressed" from="HUD/ConfigModal/Margin/VBox/BtnBox/BtnSaveConfig" to="HUD" method="_on_save_config_pressed"]

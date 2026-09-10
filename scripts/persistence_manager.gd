@@ -21,8 +21,8 @@ func _ready() -> void:
 ## Load credentials from disk
 func load_and_apply_config() -> Dictionary:
 	var cfg = {
-		"supabase_url": "https://gbyuturnmvfojtpgurun.supabase.co",
-		"supabase_anon_key": "sb_publishable_unRzEUh5rkdVI2DdIFqh5g_6K-JMEGi"
+		"supabase_url": "https://egdxqmldflwgvasrabbx.supabase.co",
+		"supabase_anon_key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVnZHhxbWxkZmx3Z3Zhc3JhYmJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkwMTg1MzQsImV4cCI6MjEwNDU5NDUzNH0.1VC4pg42yul8EBjhB7-q5dBdfihrOxnZA5UuEAGGAlw"
 	}
 	if FileAccess.file_exists(CONFIG_FILE):
 		var f = FileAccess.open(CONFIG_FILE, FileAccess.READ)
